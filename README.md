@@ -1,228 +1,158 @@
 <div align="center">
 
-```
-███████╗ ██████╗██╗  ██╗ ██████╗     ███████╗██╗  ██╗██╗███████╗████████╗
-██╔════╝██╔════╝██║  ██║██╔═══██╗    ██╔════╝██║  ██║██║██╔════╝╚══██╔══╝
-█████╗  ██║     ███████║██║   ██║    ███████╗███████║██║█████╗     ██║
-██╔══╝  ██║     ██╔══██║██║   ██║    ╚════██║██╔══██║██║██╔══╝     ██║
-███████╗╚██████╗██║  ██║╚██████╔╝    ███████║██║  ██║██║██║        ██║
-╚══════╝ ╚═════╝╚═╝  ╚═╝ ╚═════╝     ╚══════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝
-```
+<img src="assets/hero.svg" alt="ECHO SHIFT — Multiplayer Strategy Arena" width="100%"/>
 
-### ⚡ A memory duel. A strategy war. 22 seconds a round. ⚡
+### ⚡ A real-time memory-and-sabotage arena for 2–8 players ⚡
 
-**Remember the pattern. Claim the final symbol. Charge your energy. Scramble your rivals' minds.**
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)
+![Players](https://img.shields.io/badge/Players-2%E2%80%938-ff3d9a?style=for-the-badge)
+![Rounds](https://img.shields.io/badge/Rounds-5-b44dff?style=for-the-badge)
+![Keys](https://img.shields.io/badge/API_Keys-0-7dff8a?style=for-the-badge)
 
-![Players](https://img.shields.io/badge/players-2--8-ff2e88?style=for-the-badge)
-![Rounds](https://img.shields.io/badge/rounds-5-7c4dff?style=for-the-badge)
-![React](https://img.shields.io/badge/React-TypeScript-00d8ff?style=for-the-badge&logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-build-ffc21a?style=for-the-badge&logo=vite&logoColor=white)
-![Netlify](https://img.shields.io/badge/Netlify-Functions%20%2B%20Blobs-00c7b7?style=for-the-badge&logo=netlify&logoColor=white)
-![Keys](https://img.shields.io/badge/API%20keys-zero-39ff14?style=for-the-badge)
-![Built](https://img.shields.io/badge/built%20by-one%20developer-ff6b35?style=for-the-badge)
-
-**No accounts. No downloads. No API keys. No database setup.**
-**Share a six-character code — and the arena opens.**
+**Built from scratch by one developer. No database setup. No API keys. Just a room code and your friends.**
 
 </div>
 
 ---
 
-## 🧠 The Idea
+## 🌀 The Idea
 
-Most party games test **speed**. Most memory games test **recall**. Most strategy games test **planning**.
+> A sequence of symbols flashes. It vanishes. **Remember it, choose its final symbol, and strike your rivals before they strike you.**
 
-**ECHO SHIFT forces all three into the same 22 seconds.**
+Echo Shift fuses a memory race with a tactical power system. Fast, correct answers fill your energy; energy becomes a **Shield** or a **Pulse** that scrambles an opponent's next sequence. Five rounds. One champion.
 
-You glimpse a symbol sequence for **7 seconds**. It vanishes. You have **15 seconds** to choose its final symbol — while rivals race you for first-blood bonuses, and every correct answer charges the energy you'll use to **shield yourself** or **scramble a rival's next sequence**.
-
-Remembering is not enough. You have to remember **faster than everyone else**, and decide **who to sabotage**.
-
-> One person built the entire thing from scratch — client, server, rules engine, and concurrency layer.
+<img src="assets/rounds.svg" alt="Round timeline" width="100%"/>
 
 ---
 
-## 🎬 A Round, Frame by Frame
+## 🎮 How a Match Flows
 
 ```mermaid
 flowchart LR
-    A["👁️ MEMORIZE<br/>7 seconds<br/>sequence on screen"] --> B["🫥 SEQUENCE VANISHES"]
-    B --> C["🎯 ANSWER<br/>15 seconds<br/>pick the final symbol"]
-    C --> D["📊 SCORE<br/>points + energy"]
-    D --> E{"Round 5?"}
-    E -- No --> F["⚡ SPEND ENERGY<br/>Shield or Pulse"]
-    F --> A
-    E -- Yes --> G["🏆 CHAMPION"]
-
-    style A fill:#7c4dff,color:#fff
-    style C fill:#ff2e88,color:#fff
-    style G fill:#ffc21a,color:#000
+    A([🏠 Host creates room]) --> B([🔑 Friends join with 6-char code])
+    B --> C([▶ Host starts · 2+ players])
+    C --> D[👁 Memorize 7s]
+    D --> E[⚡ Answer 15s]
+    E --> F{Correct?}
+    F -- yes --> G[💯 Points + 🔋 Energy]
+    F -- no --> H[No points]
+    G --> I[🛡 Shield / 💥 Pulse]
+    H --> I
+    I --> J{Round 5 done?}
+    J -- no --> D
+    J -- yes --> K([🏆 Champion])
 ```
 
 ---
 
-## ⚔️ Abilities
+## 🧮 Scoring Engine
 
-You earn **1 energy charge per correct answer** (max **3**). Spend them wisely.
-
-| Ability | Cost | Effect |
-|---|---|---|
-| 🛡️ **SHIELD** | 1 energy | Blocks the **next incoming Pulse** aimed at you |
-| 💥 **PULSE** | 1 energy | **Scrambles a rival's next sequence** |
-
-```mermaid
-flowchart TD
-    P["Player fires 💥 PULSE at Rival"] --> Q{"Rival has 🛡️ Shield?"}
-    Q -- Yes --> R["Pulse absorbed. Shield consumed."]
-    Q -- No --> S["Rival's next sequence is scrambled"]
-```
-
-Hoard energy for a late-game strike — or burn it early to cripple the leader. Max three charges means hoarding has a ceiling.
-
----
-
-## 💯 Scoring
-
-| Event | Points |
-|---|---|
+| Action | Reward |
+|:--|:--:|
 | ✅ Correct answer | **+100** |
-| 🥇 First correct answer of the round | **+25** |
-| ⚡ Correct answer within 3 seconds | **+10** |
-| 🔋 Any correct answer | **+1 energy** (cap 3) |
+| 🥇 First correct in the round | **+25** |
+| ⚡ Correct within 3 seconds | **+10** |
+| 🔋 Any correct answer | **+1 energy** (max 3) |
 
-**Perfect round = 135 points. Perfect game = 675.**
+> 🔥 **Perfect round: 135 points** (100 + 25 + 10).
 
-### Tiebreakers (in order)
+### ⚔️ Abilities
 
+| | Ability | Cost | Effect |
+|:-:|:--|:-:|:--|
+| 🛡 | **Shield** | 1 energy | Blocks the next incoming Pulse |
+| 💥 | **Pulse** | 1 energy | Scrambles a rival's next sequence |
+
+### 🏆 Tiebreakers (in order)
 1. Highest score
 2. Most correct answers
-3. Lowest cumulative response time
-
-No ties survive. Someone is always faster.
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-flowchart LR
-    subgraph Browser["🖥️ Browser (React + TypeScript + Vite)"]
-        UI["Game UI"]
-        POLL["State poller · ~1.1 s"]
-    end
-
-    subgraph Netlify["☁️ Netlify"]
-        FN["Function<br/>netlify/functions/game.mjs"]
-        BL[("Netlify Blobs<br/>strong consistency")]
-    end
-
-    UI -- "actions" --> FN
-    POLL -- "GET state" --> FN
-    FN -- "conditional writes<br/>onlyIfMatch" --> BL
-    FN -- "sanitized state<br/>NO answer keys" --> POLL
-```
-
-### 🔐 Server-authoritative by design
-
-The client **never receives an answer key**. The server validates the chosen answer index and computes every score. Opening DevTools reveals nothing worth cheating with.
-
-### 🔒 Concurrency without a database
-
-Eight players can hit one room at the same moment. Room state lives as a single JSON object in a strongly consistent Blobs store, protected by:
-
-- a **short-lived per-room lock** created via conditional writes
-- **`onlyIfMatch`** commits, so a stale write fails instead of overwriting
-
-A deliberate best-effort guard for a lightweight real-time prototype — see [Limitations](#-honest-limitations).
+3. Fastest cumulative response time
 
 ---
 
 ## 🚀 Quick Start
 
-**Requirements:** Node.js 20+ recommended.
+**Requirements:** Node.js 20+ recommended
 
 ```bash
 npm install
 npm run dev
 ```
 
-> **Heads-up:** plain Vite serves only the frontend. The client calls `/.netlify/functions/game`, which Vite does not emulate. For the full game locally, install the Netlify CLI and run:
->
+> ⚠️ Vite alone serves only the frontend. For the serverless game function, install the Netlify CLI and run:
 > ```bash
 > netlify dev
 > ```
-
-### Test & build
+> The client talks to `/.netlify/functions/game` directly.
 
 ```bash
-npm test          # contract test suite
-npm run build     # production build
+npm test         # contract test suite
+npm run build    # production build
 ```
 
 ---
 
-## 🌍 Deploy
+## 🌐 Deploy to Netlify
 
-1. Verify locally: `npm install` then `npm run build`.
-2. Deploy via **Netlify Git-based deployment** (recommended), **Netlify CLI**, or a ZIP to Netlify Drop.
-   *Drop's serverless function support can vary by workflow. If the function isn't recognized from a ZIP, use Git or CLI.*
-3. Confirm `/.netlify/functions/game` is live and Blobs is available to Functions.
-4. Open the public URL in **two separate browser sessions**, create a room, join with the six-character code, and play five rounds.
+1. Run `npm install && npm run build` locally to verify.
+2. Deploy via **Git-connected deploy** (recommended) or the Netlify CLI. A manual ZIP on Netlify Drop may not register the function.
+3. Confirm `/.netlify/functions/game` is live and Netlify Blobs is available.
+4. Open the URL in **two separate browser sessions**, create a room, join with the code, and play five rounds.
 
-No GitHub account is required by the code. A Netlify account is required to publish a public URL. **Never put private tokens in frontend code.**
-
----
-
-## 🎮 Play in 60 Seconds
-
-| Step | Who | Action |
-|---|---|---|
-| 1 | Host | Create a room → get a **6-character code** |
-| 2 | Friends | Enter the code to join (2–8 players total) |
-| 3 | Host | Start once **2+ players** are in |
-| 4 | Everyone | Memorize → answer → score → ability → repeat |
-| 5 | Everyone | After **round 5**, the highest score is champion |
+> 🔐 Never put private tokens in frontend code.
 
 ---
 
-## 🧪 Honest Limitations
+## 🧱 Architecture
 
-This README does not pretend to be more than it is.
-
-| Limitation | Detail |
-|---|---|
-| 🔄 **Polling, not WebSockets** | Clients poll roughly every 1.1 seconds |
-| 🧱 **Not a transactional DB** | The lock + `onlyIfMatch` approach is a best-effort concurrency guard |
-| 🏟️ **Not tournament-grade** | For high-concurrency competitive play, migrate room state to a transactional database and add WebSockets or a presence service |
-
-### Build verification status
-
-The source syntax checks and the included **3-test contract suite pass**. A full Vite production build and lockfile generation could not be run in the original generation environment because `registry.npmjs.org` failed with DNS `EAI_AGAIN`. The archive is **source-complete but not verified as a production build**, and intentionally ships **no fabricated lockfile**.
-
-On a network-enabled runner:
-
-```bash
-npm install     # resolves deps, creates package-lock.json
-npm run build
+```mermaid
+flowchart TB
+    subgraph Browser["🖥 React + TypeScript client"]
+        UI[Game UI] -->|poll ~1.1s| API
+    end
+    subgraph Netlify["☁️ Netlify"]
+        API["⚙️ Function<br/>netlify/functions/game.mjs"] --> LOCK["🔒 Per-room lock<br/>conditional writes"]
+        LOCK --> BLOB[("🗄 Netlify Blobs<br/>strong consistency<br/>onlyIfMatch commits")]
+    end
 ```
 
+<details>
+<summary><b>🛡 Anti-cheat by design</b></summary>
+
+The server **never sends answer keys** to clients. It validates the chosen answer index and computes all scores itself.
+</details>
+
+<details>
+<summary><b>⚠️ Known limitations (honest section)</b></summary>
+
+- Room state is one JSON object in a strongly consistent Blobs store, protected by a short-lived lock plus `onlyIfMatch` commits. This is a **best-effort concurrency guard** for a party-game prototype, not transactional database semantics.
+- The frontend **polls** (~1.1s); it is not WebSocket-based.
+- For high-concurrency or competitive production play: move mutable room state to a transactional database and add WebSockets/presence.
+</details>
+
+<details>
+<summary><b>🧪 Build verification status</b></summary>
+
+Source syntax checks and the included 3-test contract suite pass. A full Vite production build and lockfile generation could not run in the generation environment (`registry.npmjs.org` DNS `EAI_AGAIN`). The archive is **source-complete but not verified as a production build**. On a network-enabled runner, run `npm install` (creates `package-lock.json`) then `npm run build`. No fabricated lockfile is included.
+</details>
+
 ---
 
-## 🗺️ Where This Could Go
+## 🗺 Roadmap
 
-- ⚡ WebSocket transport for true real-time sync
-- 🗄️ Transactional backend for competitive-grade integrity
-- 🧩 Longer sequences and new symbol sets as rounds escalate
-- 📡 Presence indicators and reconnect handling
+- [ ] WebSocket realtime sync
+- [ ] Transactional database for competitive play
+- [ ] More symbol sets and Pulse variants
 
 ---
 
 <div align="center">
 
-### Designed, coded, and shipped by one developer. ⚡
+**Made solo, from zero, with obsession.** 🔮
 
-**Gather your friends. Open a room. Find out who really remembers.**
-
-`ECHO SHIFT`
+⭐ *Star the repo if Echo Shift made you lose a round you were sure you'd win.* ⭐
 
 </div>
